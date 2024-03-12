@@ -10,31 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
-    public function applyForTheEvent(ReservationRequest $request)
-    {
-        $validated = $request->validated();
-        Event::create($validated);
-
-        return redirect()->back();
-    }
-
-    // public function applyForTheEvent(ReservationRequest $request, $eventId)
+    // public function applyForTheEvent(ReservationRequest $request)
     // {
     //     $validated = $request->validated();
-            
-    //     $event = Event::find($eventId);
+    //     Event::create($validated);
 
-    //     if ($event && $event->available_seats > 0) {
-    //         Reservation::create([
-    //             'event_id' => $event->id,
-    //         ]);
-
-    //         $event->decrement('available_seats');
-
-    //         return redirect()->back()->with('success', 'Reservation successful!');
-    //     } else {
-    //         return redirect()->back()->with('error', 'No available seats for this event.');
-    //     }
+    //     return redirect()->back();
     // }
 
 
@@ -52,6 +33,10 @@ class ReservationController extends Controller
                     'status' => 'Confirmed',
                     'ticket_number' => $ticket_number,
                 ]);
+
+                $event->available_seats = $event->available_seats - 1;
+                $event->save();
+                
                 return redirect()->back();
             }else{
                 Reservation::create([
@@ -65,35 +50,37 @@ class ReservationController extends Controller
         }
 
         return redirect()->back();
-        // return redirect()->route('events', $event)->with('success', 'Event reserved!');
     }
 
-    
-    // public function generateTicket(Reservation $reservation)
-    // {
-    //     $event = $reservation->event;
+    public function generateTicket(Reservation $reservation)
+    {
+        $event = $reservation->event;
 
-    //     // Customize this part to include more details on the ticket
-    //     $ticketDetails = sprintf(
-    //         'TICKET-%s-%s-%s-%s',
-    //         $event->title,
-    //         now()->format('YmdHis'), // Add current date and time for uniqueness
-    //         auth()->id(),
-    //         $reservation->id // Include reservation ID for reference
-    //     );
+        // Customize this part to include more details on the ticket
+        $ticketDetails = sprintf(
+            'TICKET-%s-%s-%s-%s',
+            $event->title,
+            now()->format('YmdHis'), // Add current date and time for uniqueness
+            auth()->id(),
+            $reservation->id // Include reservation ID for reference
+        );
 
-    //     return $ticketDetails;
-    // }
+        return $ticketDetails;
+    }
 
 
-    // public function showTicket(Reservation $reservation)
-    // {
-    //     // If the reservation doesn't have a ticket, abort with a 404
-    //     if (!$reservation->ticket_number) {
-    //         abort(404);
-    //     }
+    public function showTicket(Request $request)
+    {
+        // If the reservation doesn't have a ticket, abort with a 404
 
-    //     return view('tickets', compact('reservation'));
-    // }
+        $currentUser = Auth::id();
+        $reservations = Reservation::where('user_id', $currentUser)->where('event_id', $request->eventId)->get();
+
+        if (!$reservations) {
+            abort(404);
+        }
+
+        return view('tickets', compact('reservations'));
+    }
 
 }

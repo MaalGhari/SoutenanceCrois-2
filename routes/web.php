@@ -40,9 +40,7 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 Route::middleware(['auth'])->group(function(){
-    // Route::get('/organiser/displayEvents', [OrganiserController::class, 'organiser_dashboard'])->name('organiser.organiser_dashboard');
     Route::get('/organiser/statistics', [OrganiserController::class, 'organiser_dashboard'])->name('organiser.organiser_dashboard');
-
 }); 
 
 Route::middleware(['auth'])->group(function(){
@@ -54,7 +52,6 @@ Route::post('/search', [SearchController::class, 'search'])->name('search');
 Route::put('/user/update/photo', [ProfileController::class, 'updatePhoto'])->name('updatePhoto');
 
 Route::get('/myEvents', [EventController::class, 'myEvents'])->name('organiser.myEvents');
-// Route::get('/organiser/displayEvents', [OrganiserController::class, 'organiser_dashboard'])->name('organiser.organiser_dashboard');
 Route::get('/events/display/all', [EventController::class, 'displayEvents'])->name('displayEvents');
 Route::get('/createEvent', [EventController::class, 'createEvents'])->name('createEvents');
 Route::post('/createEvent/store', [EventController::class, 'store'])->name('createEvents.store');
@@ -64,7 +61,6 @@ Route::delete('/deleteEvent{id}', [EventController::class, 'deleteEvent'])->name
 Route::get('/organiser/eventsDetails{id}', [EventController::class, 'eventsDetails'])->name('eventsDetails');
 
 Route::get('/categories', [CategoryController::class, 'categories'])->name('admin.categories');
-// Route::get('/admin/statistics', [AdminController::class, 'admin_dashboard'])->name('admin.admin_dashboard');
 Route::get('/categories/display/all', [CategoryController::class, 'displayCategories'])->name('displayCategories');
 Route::get('/createCategory', [CategoryController::class, 'createCategories'])->name('createCategories');
 Route::post('/createCategory/store', [CategoryController::class, 'storeCategories'])->name('createCategories.store');
@@ -72,8 +68,7 @@ Route::get('/updateCategory{id}', [CategoryController::class, 'updateCategories'
 Route::post('/updateCategory/edit{id}', [CategoryController::class, 'update'])->name('updateCategories.edit');
 Route::delete('/deleteCategory{id}', [CategoryController::class, 'deleteCategory'])->name('categoryDelete');
 
-Route::get('/user/apply{id}', [ReservationController::class, 'apply'])->name('apply');
-// Route::post('/user/applyEvent', [ReservationController::class, 'applyForTheEvent'])->name('applyEvent');
+Route::post('/user/apply{id}', [ReservationController::class, 'apply'])->name('apply');
 
 Route::get('/invoice', [InvoiceController::class, 'generate']);
 
@@ -85,15 +80,7 @@ Route::get('/updateUnvalidated{id}', [EventController::class, 'unvalidatedEvent'
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/user/{id}', [UserController::class, 'update'])->name('users.update');
 
-// Route::get('/events/display/categories', [CategoryController::class, 'displayCategoriesForEvent'])->name('displayCategoriesForEvent');
-// Route::get('/filtration/events', [FiltrerController::class, 'filtration'])->name('filtration.events');
+Route::get('/events/filter', [EventController::class, 'filterByCategory'])->name('filterByCategory');
 
-// Route::get('/category/{categoryId}', [EventController::class, 'eventsByCategory'])->name('events.category');
-
-
-// Route::get('/events/filter', [EventController::class, 'filterByCategory'])->name('filterByCategory');
-
-
-// Route::post('/events/reserve/{event}', [ReservationController::class, 'reserve'])->name('events.reserve');
-// Route::post('/reservations/ticket/{reservation}', [ReservationController::class, 'generateTicket'])->name('events.ticket');
-// Route::post('/showticket/{event}', [ReservationController::class, 'showTicket'])->name('showticket');
+Route::post('/reservations/ticket/{reservation}', [ReservationController::class, 'generateTicket'])->name('events.ticket');
+Route::post('/showticket', [ReservationController::class, 'showTicket'])->name('showTicket');

@@ -13,10 +13,11 @@
         <div class="max-w-screen-xl mx-auto mt-5 p-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($events as $event)
-                    @php
+                    {{-- @php
                         $reservationsCount = \App\Models\Reservation::where('event_id', $event->id)->count();
+                        $event->available_seats = $event->available_seats - $reservationsCount;
                         $totalAvailableSeats = $event->available_seats - $reservationsCount;
-                    @endphp
+                    @endphp --}}
                     <div class="border border-gray-400 bg-white rounded p-4 flex flex-col justify-between leading-normal">
                         <div class="mb-8">
                             <div class="flex items-center">
@@ -47,40 +48,30 @@
                                 <p class="text-red-600 text-left font-bold">{{$event->categories->name}}</p>
                             </div>
                             <div class="text-sm mt-1"> 
-                                <p class="text-orange-400 text-bold text-right text-lg">{{$totalAvailableSeats}}</p>
+                                <p class="text-orange-400 text-bold text-right text-lg">{{ $event->available_seats }}</p>
                             </div>
                             @if(Auth::user()->role == 'user')
-                            <form action="{{route('apply', $event->id)}}" method="GET">
-                                @csrf
-                                <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow mt-5 ml-28">
-                                    Reseve here!
-                                </button>
-                            </form>
+                                <div class="button-container">
+                                    <form action="{{ route('apply', $event->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow mt-5">
+                                            Reserve here!
+                                        </button>
+                                    </form>
+                                
+                                    <span class="button-spacing"></span>
+                                
+                                    <form action="{{ route('showTicket') }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <input type="text" class = "hidden" value = "{{$event->id}}" name = "eventId">
+                                        <button class="bg-white hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 border border-gray-900 rounded shadow mt-5">
+                                            View ticket
+                                        </button>
+                                    </form>
+                                </div>
                             @endif
                         </div>
                     </div>
-
-                {{-- @php
-                $userReservations = auth()->user()->reservations;
-                $eventReservation = $userReservations
-                    ? $userReservations->where('event_id', $event->id)->first()
-                    : null;
-                @endphp
-
-                @if ($eventReservation && $eventReservation->ticket_number)
-                    <a href="{{ route('events.ticket', $eventReservation->id) }}"
-                        class="text-blue-500 hover:text-blue-700">
-                        View Ticket
-                    </a>
-                @elseif ($eventReservation)
-                    <form action="{{ route('events.ticket', $eventReservation) }}" method="post">
-                        @csrf
-                        <button type="submit" class="text-blue-500 hover:text-blue-700">
-                            Get Ticket (Not Processed Yet)
-                        </button>
-                    </form>
-                @endif --}}
-
                 @endforeach
             </div>
         </div>
